@@ -7,26 +7,27 @@ import Components.Game.GameWorld;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class Player extends GameEntity implements Runnable {
-    private int[] moveDirection = new int[2];
-    private ImageIcon[][] animation = new ImageIcon[4][3];
     private GameWorld world;
 
+    private int[] moveDirection = new int[2];
+    private ImageIcon[][] animation = new ImageIcon[4][3];
     private Action upAction;
     private Action downAction;
     private Action rightAction;
     private Action leftAction;
 
+    private int score;
+
     public Player(GameWorld world) {
         super(ObjectsType.PLAYER, 1, 1);
         //setFocusable(true);
         this.world = world;
+        score = 0;
 
         String[] directions = {"up", "down", "right", "left"};
         for (int i = 0; i < directions.length; i++) {
@@ -85,9 +86,18 @@ public class Player extends GameEntity implements Runnable {
     public void move() {
         GameEntity nextEntity = world.getEntityAtPosition(pos[0] + moveDirection[0], pos[1] + moveDirection[1]);
         if (nextEntity.getObjectsType().isWalkable()) {
-            world.switchEntityPlaces(this, nextEntity);
+            if (nextEntity.getObjectsType() == ObjectsType.COIN) {
+                score += 1;
+                nextEntity = world.changeEntity(nextEntity, new GameEntity(ObjectsType.EMPTY_SPACE, nextEntity.getPosition()[0], nextEntity.getPosition()[1]));
+            }
+            world.swapEntityPlaces(this, nextEntity);
             setFocusable(true);
+            requestFocusInWindow();
         }
+    }
+
+    public int getScore() {
+        return score;
     }
 
     @Override

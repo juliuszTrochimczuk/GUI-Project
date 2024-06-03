@@ -22,7 +22,7 @@ public class GameThread extends Thread {
         timerThread.start();
         playerThread.start();
         while (!currentThread().isInterrupted()) {
-            gameFrame.updateUI(timer);
+            gameFrame.updateUI(timer, world.getPlayer());
             gameFrame.revalidate();
             gameFrame.repaint();
             world.updateWorld();

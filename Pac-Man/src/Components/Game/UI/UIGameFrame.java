@@ -2,6 +2,7 @@ package Components.Game.UI;
 
 import Components.Game.GameThread;
 import Components.Game.GameWorld;
+import Components.Game.Player.Player;
 import Components.Game.Timer;
 import Components.MainMenu.MainMenuFrame;
 
@@ -36,7 +37,8 @@ public class UIGameFrame extends JFrame {
         setVisible(true);
     }
 
-    public void updateUI(Timer timer) {
+    public void updateUI(Timer timer, Player player) {
         counterPanel.updateTimeText(timer.getSeconds());
+        counterPanel.updateScoreText(player.getScore());
     }
 }

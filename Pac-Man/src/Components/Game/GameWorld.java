@@ -16,7 +16,6 @@ public class GameWorld extends JPanel {
         setBackground(Color.BLACK);
         setSize(new Dimension(width * 16, height * 16));
         setLayout(new GridLayout(width, height));
-        //setFocusable(true);
 
         entities = new GameEntity[height][width];
         entityPlacement = new JPanel[height][width];
@@ -36,11 +35,12 @@ public class GameWorld extends JPanel {
         player.move();
     }
 
+    synchronized
     public GameEntity getEntityAtPosition(int y, int x) {
         return entities[y][x];
     }
 
-    public void switchEntityPlaces(GameEntity caller, GameEntity toSwitch) {
+    public void swapEntityPlaces(GameEntity caller, GameEntity toSwitch) {
         GameEntity objectToRemember = caller;
 
         entities[toSwitch.getPosition()[0]][toSwitch.getPosition()[1]] = caller;
@@ -48,15 +48,21 @@ public class GameWorld extends JPanel {
         entityPlacement[toSwitch.getPosition()[0]][toSwitch.getPosition()[1]].add(caller);
 
         entities[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]] = toSwitch;
-        entityPlacement[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]].remove(caller);
+        entityPlacement[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]].remove(objectToRemember);
         entityPlacement[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]].add(toSwitch);
 
+        int[] oldCallerPosition = {caller.getPosition()[0], caller.getPosition()[1]};
         caller.setPosition(toSwitch.getPosition());
-        caller.setFocusable(true);
-        toSwitch.setPosition(objectToRemember.getPosition());
+        toSwitch.setPosition(oldCallerPosition);
+    }
 
+    public GameEntity changeEntity(GameEntity original, GameEntity newEntity) {
+        entities[original.getPosition()[0]][original.getPosition()[1]] = newEntity;
+        entityPlacement[original.getPosition()[0]][original.getPosition()[1]].remove(original);
+        entityPlacement[original.getPosition()[0]][original.getPosition()[1]].add(newEntity);
         revalidate();
         repaint();
+        return newEntity;
     }
 
     private void generateMap() {

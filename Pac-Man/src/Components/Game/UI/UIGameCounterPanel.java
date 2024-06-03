@@ -32,4 +32,8 @@ public class UIGameCounterPanel extends JPanel {
         finalText += seconds;
         timeText.setText(finalText);
     }
+
+    public void updateScoreText(int score) {
+        scoreText.setText("Score: " + score);
+    }
 }
