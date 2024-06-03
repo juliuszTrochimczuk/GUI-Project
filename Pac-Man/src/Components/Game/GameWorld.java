@@ -1,20 +1,62 @@
 package Components.Game;
 
+import Components.Game.Entities.GameEntity;
+import Components.Game.Entities.ObjectsType;
+import Components.Game.Player.Player;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GameWorld extends JPanel {
-    public GameEntity[][] entities;
+    private GameEntity[][] entities;
     private JPanel[][] entityPlacement;
+    private Player player;
 
     public GameWorld(int height, int width) {
         setBackground(Color.BLACK);
-        entities = new GameEntity[height][width];
-        entityPlacement = new JPanel[height][width];
         setSize(new Dimension(width * 16, height * 16));
         setLayout(new GridLayout(width, height));
+        //setFocusable(true);
+
+        entities = new GameEntity[height][width];
+        entityPlacement = new JPanel[height][width];
 
         generateMap();
+        player = new Player(this);
+        entities[1][1] = player;
+        entityPlacement[1][1].remove(0);
+        entityPlacement[1][1].add(player);
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void updateWorld() {
+        player.move();
+    }
+
+    public GameEntity getEntityAtPosition(int y, int x) {
+        return entities[y][x];
+    }
+
+    public void switchEntityPlaces(GameEntity caller, GameEntity toSwitch) {
+        GameEntity objectToRemember = caller;
+
+        entities[toSwitch.getPosition()[0]][toSwitch.getPosition()[1]] = caller;
+        entityPlacement[toSwitch.getPosition()[0]][toSwitch.getPosition()[1]].remove(toSwitch);
+        entityPlacement[toSwitch.getPosition()[0]][toSwitch.getPosition()[1]].add(caller);
+
+        entities[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]] = toSwitch;
+        entityPlacement[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]].remove(caller);
+        entityPlacement[objectToRemember.getPosition()[0]][objectToRemember.getPosition()[1]].add(toSwitch);
+
+        caller.setPosition(toSwitch.getPosition());
+        caller.setFocusable(true);
+        toSwitch.setPosition(objectToRemember.getPosition());
+
+        revalidate();
+        repaint();
     }
 
     private void generateMap() {
@@ -29,24 +71,24 @@ public class GameWorld extends JPanel {
                 panel.setSize(new Dimension(16, 16));
                 panel.setBackground(Color.BLACK);
                 entityPlacement[i][j] = panel;
-                entities[i][j] = new GameEntity(ObjectsType.EMPTY_SPACE);
+                entities[i][j] = new GameEntity(ObjectsType.EMPTY_SPACE, i, j);
                 add(entityPlacement[i][j]);
             }
         }
 
         //FILL HORIZONTAL EDGES
         for (int i = 0; i < entities[0].length; i++) {
-            entities[0][i] = new GameEntity(ObjectsType.WALL);
+            entities[0][i] = new GameEntity(ObjectsType.WALL, 0, i);
             entityPlacement[0][i].add(entities[0][i], BorderLayout.CENTER);
-            entities[entities.length - 1][i] = new GameEntity(ObjectsType.WALL);
+            entities[entities.length - 1][i] = new GameEntity(ObjectsType.WALL, entities.length - 1, i);
             entityPlacement[entities.length - 1][i].add(entities[entities.length - 1][i]);
         }
 
         //FILL VERTICAL EDGES
         for (int i = 1; i < entities.length - 1; i++) {
-            entities[i][0] = new GameEntity(ObjectsType.WALL);
+            entities[i][0] = new GameEntity(ObjectsType.WALL, i, 0);
             entityPlacement[i][0].add(entities[i][0], BorderLayout.CENTER);
-            entities[i][entities[i].length - 1] = new GameEntity(ObjectsType.WALL);
+            entities[i][entities[i].length - 1] = new GameEntity(ObjectsType.WALL, i, entities[i].length - 1);
             entityPlacement[i][entities[i].length - 1].add(entities[i][entities[i].length - 1], BorderLayout.CENTER);
         }
 
@@ -63,17 +105,14 @@ public class GameWorld extends JPanel {
                     entities[i + 1][j].getObjectsType() == ObjectsType.WALL ||
                     entities[i][j - 1].getObjectsType() == ObjectsType.WALL ||
                     entities[i][j + 1].getObjectsType() == ObjectsType.WALL) {
-                    entities[i][j] = new GameEntity(ObjectsType.EMPTY_SPACE);
+                    entities[i][j] = new GameEntity(ObjectsType.EMPTY_SPACE, i, j);
                     entityPlacement[i][j].add(entities[i][j], BorderLayout.CENTER);
                 } else {
-                    entities[i][j] = new GameEntity(typesOfEntities[(int) (Math.random() * typesOfEntities.length)]);
+                    entities[i][j] = new GameEntity(typesOfEntities[(int) (Math.random() * typesOfEntities.length)], i, j);
                     entityPlacement[i][j].add(entities[i][j], BorderLayout.CENTER);
                 }
             }
         }
-
-        revalidate();
-        repaint();
     }
 
     private void drawMap() {

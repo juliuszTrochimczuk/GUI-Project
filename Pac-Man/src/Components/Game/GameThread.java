@@ -5,27 +5,33 @@ import Components.Game.UI.UIGameFrame;
 public class GameThread extends Thread {
     private UIGameFrame gameFrame;
     private GameWorld world;
-    private Timer gameTimer;
-    private Thread gameTimerThread;
+    private Timer timer;
+    private Thread timerThread;
+    private Thread playerThread;
 
     public GameThread(int heightOfMap, int widthOfMap) {
         world = new GameWorld(heightOfMap, widthOfMap);
         gameFrame = new UIGameFrame(this, world);
-        gameTimerThread = new Thread(gameTimer);
+        timer = new Timer();
+        timerThread = new Thread(timer);
+        playerThread = new Thread(world.getPlayer());
     }
 
     @Override
     public void run() {
-        gameTimerThread.start();
+        timerThread.start();
+        playerThread.start();
         while (!currentThread().isInterrupted()) {
-            System.out.println("Game is running");
+            gameFrame.updateUI(timer);
             gameFrame.revalidate();
             gameFrame.repaint();
+            world.updateWorld();
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
                 currentThread().interrupt();
-                gameTimerThread.interrupt();
+                timerThread.interrupt();
+                playerThread.interrupt();
             }
         }
     }
