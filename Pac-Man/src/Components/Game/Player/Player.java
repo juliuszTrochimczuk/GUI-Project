@@ -91,9 +91,9 @@ public class Player extends GameEntity implements Runnable {
                 nextEntity = world.changeEntity(nextEntity, new GameEntity(ObjectsType.EMPTY_SPACE, nextEntity.getPosition()[0], nextEntity.getPosition()[1]));
             }
             world.swapEntityPlaces(this, nextEntity);
-            setFocusable(true);
-            requestFocusInWindow();
         }
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
     public int getScore() {

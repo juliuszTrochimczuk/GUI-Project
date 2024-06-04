@@ -4,7 +4,6 @@ import Components.Game.GameThread;
 import Components.Game.GameWorld;
 import Components.Game.Player.Player;
 import Components.Game.Timer;
-import Components.MainMenu.MainMenuFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,15 +14,15 @@ public class UIGameFrame extends JFrame {
     private UIGameCounterPanel counterPanel;
 
     public UIGameFrame(GameThread gameThread, GameWorld gameWorld) {
-        setTitle("Pac-man - Game");
+        setTitle("Pacman - Game");
         setSize(new Dimension(gameWorld.getWidth(), gameWorld.getHeight() + 50));
 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                MainMenuFrame nextFrame = new MainMenuFrame();
-                //Save score
+                int achivedScore = gameWorld.getPlayer().getScore();
+                new UISaveScoreFrame(achivedScore);
                 dispose();
                 gameThread.interrupt();
             }

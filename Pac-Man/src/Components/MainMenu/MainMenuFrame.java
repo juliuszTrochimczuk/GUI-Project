@@ -7,22 +7,37 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainMenuFrame extends JFrame {
-    OpeningPanel openingPanel = new OpeningPanel();
-    ChooseGameSizePanel gameSizePanel = new ChooseGameSizePanel();
+
+    private OpeningPanel openingPanel = new OpeningPanel();
+    private ChooseGameSizePanel gameSizePanel = new ChooseGameSizePanel();
+    private HighScorePanel highScorePanel = new HighScorePanel();
 
     public MainMenuFrame() {
-        setTitle("Pac-man - Main Menu");
+        setTitle("Pacman - Main Menu");
         setSize(new Dimension(300, 300));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         add(new TitlePanel(), BorderLayout.NORTH);
 
-        openingPanel.addActionListenerToExitButton(e -> dispose());
         openingPanel.addActionListenerToNewGameButton(e -> {
             remove(openingPanel);
             add(gameSizePanel, BorderLayout.CENTER);
-            repaint();
             revalidate();
+            repaint();
+        });
+        openingPanel.addActionListenerToHighScoresButton(e -> {
+            remove(openingPanel);
+            add(highScorePanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        });
+        openingPanel.addActionListenerToExitButton(e -> dispose());
+
+        highScorePanel.addActionListenerToReturnToOpeningPanelButton(e -> {
+            remove(highScorePanel);
+            add(openingPanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
         });
 
         gameSizePanel.addActionListenerToReturnToOpeningPanelButton(e -> {

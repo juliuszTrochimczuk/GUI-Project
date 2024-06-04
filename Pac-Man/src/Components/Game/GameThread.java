@@ -27,7 +27,7 @@ public class GameThread extends Thread {
             gameFrame.repaint();
             world.updateWorld();
             try {
-                sleep(1000);
+                sleep(500);
             } catch (InterruptedException e) {
                 currentThread().interrupt();
                 timerThread.interrupt();

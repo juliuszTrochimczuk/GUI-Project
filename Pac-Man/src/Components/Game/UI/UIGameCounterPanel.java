@@ -1,7 +1,5 @@
 package Components.Game.UI;
 
-import Components.Game.Timer;
-
 import javax.swing.*;
 import java.awt.*;
 
