@@ -31,22 +31,22 @@ public class HighScorePanel extends JPanel {
                 }
             }
             myReader.close();
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            System.exit(-2);
-        }
-        Collections.sort(data);
-        String[] dataArr = new String[data.size()];
-        for (int i = 0; i < dataArr.length; i++) dataArr[i] = data.get(i).getData();
 
-        JList<String> list = new JList<>(dataArr);
-        list.setForeground(Color.ORANGE);
-        list.setBackground(Color.BLACK);
-        JScrollPane scrollPane = new JScrollPane(list);
+            Collections.sort(data);
+            String[] dataArr = new String[data.size()];
+            for (int i = 0; i < dataArr.length; i++) dataArr[i] = data.get(i).getData();
+
+            JList<String> list = new JList<>(dataArr);
+            list.setForeground(Color.ORANGE);
+            list.setBackground(Color.BLACK);
+            JScrollPane scrollPane = new JScrollPane(list);
+
+            add(scrollPane, BorderLayout.CENTER);
+        } catch (IOException ex) {
+        }
 
         returnToOpeningPanelButton = new JButton("Return to Main Menu");
         add(returnToOpeningPanelButton, BorderLayout.SOUTH);
-        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void addActionListenerToReturnToOpeningPanelButton(ActionListener actionListener) {

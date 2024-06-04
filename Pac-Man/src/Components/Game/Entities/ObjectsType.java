@@ -11,7 +11,6 @@ public enum ObjectsType {
     private final boolean walkable;
 
     private ObjectsType(String iconPath, boolean walkable) {
-
         this.iconPath = iconPath;
         this.walkable = walkable;
     }

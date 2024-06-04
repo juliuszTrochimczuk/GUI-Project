@@ -23,13 +23,13 @@ public class GameThread extends Thread {
         playerThread.start();
         while (!currentThread().isInterrupted()) {
             gameFrame.updateUI(timer, world.getPlayer());
+            gameFrame.checkIfTheGameEnds(world);
             gameFrame.revalidate();
             gameFrame.repaint();
             world.updateWorld();
             try {
                 sleep(500);
             } catch (InterruptedException e) {
-                currentThread().interrupt();
                 timerThread.interrupt();
                 playerThread.interrupt();
             }

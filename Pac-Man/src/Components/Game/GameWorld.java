@@ -2,15 +2,19 @@ package Components.Game;
 
 import Components.Game.Entities.GameEntity;
 import Components.Game.Entities.ObjectsType;
-import Components.Game.Player.Player;
+import Components.Game.MovingEntities.Ghost;
+import Components.Game.MovingEntities.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GameWorld extends JPanel {
     private GameEntity[][] entities;
     private JPanel[][] entityPlacement;
     private Player player;
+    private ArrayList<GameEntity> dots = new ArrayList<>();
+    private Ghost[] ghosts = new Ghost[4];
 
     public GameWorld(int height, int width) {
         setBackground(Color.BLACK);
@@ -33,6 +37,7 @@ public class GameWorld extends JPanel {
 
     public void updateWorld() {
         player.move();
+        for (Ghost ghost : ghosts) ghost.move();
     }
 
     synchronized
@@ -58,6 +63,7 @@ public class GameWorld extends JPanel {
 
     public GameEntity changeEntity(GameEntity original, GameEntity newEntity) {
         entities[original.getPosition()[0]][original.getPosition()[1]] = newEntity;
+        entities[original.getPosition()[0]][original.getPosition()[1]].setPosition(newEntity.getPosition());
         entityPlacement[original.getPosition()[0]][original.getPosition()[1]].remove(original);
         entityPlacement[original.getPosition()[0]][original.getPosition()[1]].add(newEntity);
         revalidate();
@@ -65,7 +71,17 @@ public class GameWorld extends JPanel {
         return newEntity;
     }
 
+    public void removeDot(GameEntity dot) {
+        dots.remove(dot);
+    }
+
+    public int getDotsCount() {
+        return dots.size();
+    }
+
     private void generateMap() {
+        ArrayList<GameEntity> emptySpaces = new ArrayList<>();
+
         if (entities[0].length != entities[entities.length - 1].length) {
             throw new RuntimeException("Map have irregular shape");
         }
@@ -114,10 +130,23 @@ public class GameWorld extends JPanel {
                     entities[i][j] = new GameEntity(ObjectsType.EMPTY_SPACE, i, j);
                     entityPlacement[i][j].add(entities[i][j], BorderLayout.CENTER);
                 } else {
-                    entities[i][j] = new GameEntity(typesOfEntities[(int) (Math.random() * typesOfEntities.length)], i, j);
-                    entityPlacement[i][j].add(entities[i][j], BorderLayout.CENTER);
+                   GameEntity newEntity = new GameEntity(typesOfEntities[(int) (Math.random() * typesOfEntities.length)], i, j);
+                   if (newEntity.getObjectsType() == ObjectsType.COIN)
+                       dots.add(newEntity);
+                   entities[i][j] = newEntity;
+                   entityPlacement[i][j].add(entities[i][j], BorderLayout.CENTER);
                 }
+               if (entities[i][j].getObjectsType() == ObjectsType.EMPTY_SPACE) {
+                   emptySpaces.add(entities[i][j]);
+               }
             }
+        }
+
+        String[] ghostsName = {"blinky", "pinky", "clyde", "inky"};
+        for (int i = 0; i <= 3; i++) {
+            int drawnedIndex = (int)(Math.random() * emptySpaces.size());
+            ghosts[i] = (Ghost) changeEntity(emptySpaces.get(drawnedIndex), new Ghost(this, ghostsName[i]));
+            ghosts[i].setPosition(emptySpaces.get(drawnedIndex).getPosition());
         }
     }
 

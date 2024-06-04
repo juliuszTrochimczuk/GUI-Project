@@ -1,4 +1,4 @@
-package Components.Game.Player;
+package Components.Game.MovingEntities;
 
 import Components.Game.Entities.GameEntity;
 import Components.Game.Entities.ObjectsType;
@@ -6,7 +6,10 @@ import Components.Game.GameWorld;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +19,7 @@ public class Player extends GameEntity implements Runnable {
 
     private int[] moveDirection = new int[2];
     private ImageIcon[][] animation = new ImageIcon[4][3];
+    private BufferedImage[][] animationBufferedImages = new BufferedImage[4][3];
     private Action upAction;
     private Action downAction;
     private Action rightAction;
@@ -27,7 +31,6 @@ public class Player extends GameEntity implements Runnable {
 
     public Player(GameWorld world) {
         super(ObjectsType.PLAYER, 1, 1);
-        //setFocusable(true);
         this.world = world;
         score = 0;
 
@@ -36,8 +39,8 @@ public class Player extends GameEntity implements Runnable {
             for (int j = 1; j <= 3; j++) {
                 try {
                     File file = new File("Assets/pacman-"+directions[i]+"/"+j+".png");
-                    BufferedImage icon = ImageIO.read(file);
-                    animation[i][j-1] = new ImageIcon(icon);
+                    animationBufferedImages[i][j-1] = ImageIO.read(file);
+                    animation[i][j-1] = new ImageIcon(animationBufferedImages[i][j-1]);
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
                     System.exit(-1);
@@ -82,6 +85,33 @@ public class Player extends GameEntity implements Runnable {
         getActionMap().put("rightAction", rightAction);
         getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "leftAction");
         getActionMap().put("leftAction", leftAction);
+
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                for (int i = 0; i < animationBufferedImages.length; i++) {
+                    for (int j = 0; j < animationBufferedImages[i].length; j++) {
+                        Image img = animationBufferedImages[i][j].getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
+                        animation[i][j] = new ImageIcon(img);
+                    }
+                }
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+
+            }
+        });
     }
 
     synchronized
@@ -90,10 +120,13 @@ public class Player extends GameEntity implements Runnable {
         if (nextEntity.getObjectsType().isWalkable()) {
             if (nextEntity.getObjectsType() == ObjectsType.COIN) {
                 score += 1;
+                world.removeDot(nextEntity);
                 nextEntity = world.changeEntity(nextEntity, new GameEntity(ObjectsType.EMPTY_SPACE, nextEntity.getPosition()[0], nextEntity.getPosition()[1]));
             }
             world.swapEntityPlaces(this, nextEntity);
         }
+        else if (nextEntity.getObjectsType() == ObjectsType.GHOST)
+            health -= 1;
         setFocusable(true);
         requestFocusInWindow();
     }
