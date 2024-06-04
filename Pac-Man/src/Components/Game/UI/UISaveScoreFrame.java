@@ -1,13 +1,16 @@
 package Components.Game.UI;
 
 import Components.MainMenu.MainMenuFrame;
+import Components.SaveDataController;
+import Components.ScoreData;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class UISaveScoreFrame extends JFrame {
     public UISaveScoreFrame(int playerAchivedScore) {
@@ -30,7 +33,7 @@ public class UISaveScoreFrame extends JFrame {
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         {
             titlePanel.setBackground(Color.BLACK);
-            JLabel text = new JLabel("Save your score: " + playerAchivedScore + " under nick...");
+            JLabel text = new JLabel("Save your score " + playerAchivedScore + " under nick...");
             text.setForeground(Color.YELLOW);
             titlePanel.add(text);
         }
@@ -45,15 +48,7 @@ public class UISaveScoreFrame extends JFrame {
             JTextField nickField = new JTextField("");
             JButton acceptButton = new JButton("Save your result");
             acceptButton.addActionListener((e) -> {
-                String textToSave = nickField.getText() + " " + playerAchivedScore;
-                try {
-                    FileWriter fw = new FileWriter("./save_file.txt", true);
-                    fw.write(textToSave + "\n");
-                    fw.close();
-                } catch (IOException ex) {
-                    System.out.println(ex.getMessage());
-                    System.exit(-2);
-                }
+                SaveDataController.getInstance().addNewSaveData(new ScoreData(playerAchivedScore, nickField.getText()));
                 new MainMenuFrame();
                 dispose();
             });

@@ -9,25 +9,29 @@ public class GameThread extends Thread {
     private Thread timerThread;
     private Thread playerThread;
 
+    public boolean isThreadAlive = true;
+
     public GameThread(int heightOfMap, int widthOfMap) {
+        isThreadAlive = true;
         world = new GameWorld(heightOfMap, widthOfMap);
         gameFrame = new UIGameFrame(this, world);
-        timer = new Timer();
+        timer = new Timer(this);
         timerThread = new Thread(timer);
         playerThread = new Thread(world.getPlayer());
     }
 
     @Override
     public void run() {
+        world.getPlayer().setMainThread(this);
         timerThread.start();
         playerThread.start();
-        while (!currentThread().isInterrupted()) {
-            gameFrame.updateUI(timer, world.getPlayer());
-            gameFrame.checkIfTheGameEnds(world);
-            gameFrame.revalidate();
-            gameFrame.repaint();
-            world.updateWorld();
+        while (isThreadAlive) {
             try {
+                gameFrame.updateUI(timer, world.getPlayer());
+                gameFrame.checkIfTheGameEnds(world);
+                gameFrame.revalidate();
+                gameFrame.repaint();
+                world.updateWorld();
                 sleep(500);
             } catch (InterruptedException e) {
                 timerThread.interrupt();

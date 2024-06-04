@@ -4,6 +4,8 @@ import Components.Game.GameThread;
 import Components.Game.GameWorld;
 import Components.Game.MovingEntities.Player;
 import Components.Game.Timer;
+import Components.MainMenu.MainMenuFrame;
+import Components.SaveDataController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,7 @@ import java.awt.event.WindowEvent;
 
 public class UIGameFrame extends JFrame {
     private UIGameCounterPanel counterPanel;
+    private boolean finishedGame = false;
 
     public UIGameFrame(GameThread gameThread, GameWorld gameWorld) {
         setTitle("Pacman - Game");
@@ -23,9 +26,21 @@ public class UIGameFrame extends JFrame {
             public void windowClosed(WindowEvent e) {
                 super.windowClosing(e);
                 int achivedScore = gameWorld.getPlayer().getScore();
-                new UISaveScoreFrame(achivedScore);
-                dispose();
+                if (finishedGame && achivedScore > SaveDataController.getInstance().getHighestScore()) {
+                    new UISaveScoreFrame(achivedScore);
+                }
+                else {
+                    new MainMenuFrame();
+                }
+                gameThread.isThreadAlive = false;
                 gameThread.interrupt();
+                dispose();
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+
             }
         });
 
@@ -44,8 +59,10 @@ public class UIGameFrame extends JFrame {
     }
 
     public void checkIfTheGameEnds(GameWorld world) {
-        if (!areThereAnyDotsToCollect(world) || !playerIsAlive(world.getPlayer()))
+        if (!areThereAnyDotsToCollect(world) || !playerIsAlive(world.getPlayer())) {
+            finishedGame = true;
             dispose();
+        }
     }
 
     private boolean areThereAnyDotsToCollect(GameWorld world) {

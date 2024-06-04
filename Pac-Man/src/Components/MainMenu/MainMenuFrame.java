@@ -1,10 +1,12 @@
 package Components.MainMenu;
 
 import Components.Game.GameThread;
-import Components.Game.UI.UIGameFrame;
+import Components.SaveDataController;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MainMenuFrame extends JFrame {
 
@@ -15,7 +17,14 @@ public class MainMenuFrame extends JFrame {
     public MainMenuFrame() {
         setTitle("Pacman - Main Menu");
         setSize(new Dimension(300, 300));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                SaveDataController.getInstance().saveDataInFile();
+                dispose();
+            }
+        });
 
         add(new TitlePanel(), BorderLayout.NORTH);
 

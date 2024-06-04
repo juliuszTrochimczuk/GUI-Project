@@ -2,6 +2,7 @@ package Components.Game.MovingEntities;
 
 import Components.Game.Entities.GameEntity;
 import Components.Game.Entities.ObjectsType;
+import Components.Game.GameThread;
 import Components.Game.GameWorld;
 
 import javax.imageio.ImageIO;
@@ -16,6 +17,7 @@ import java.io.IOException;
 
 public class Player extends GameEntity implements Runnable {
     private GameWorld world;
+    private GameThread mainThread;
 
     private int[] moveDirection = new int[2];
     private ImageIcon[][] animation = new ImageIcon[4][3];
@@ -139,12 +141,16 @@ public class Player extends GameEntity implements Runnable {
         return health;
     }
 
+    public void setMainThread(GameThread mainThread) {
+        this.mainThread = mainThread;
+    }
+
     @Override
     public void run() {
         int activeAnimationIndex = 0;
         boolean indexGrow = true;
         int directionIndex = 0;
-        while (true) {
+        while (mainThread.isThreadAlive) {
             if (getMoveDirection()[0] == -1)
                 directionIndex = 0;
             else if (getMoveDirection()[0] == 1)
@@ -168,7 +174,9 @@ public class Player extends GameEntity implements Runnable {
             }
             try {
                 Thread.sleep(500);
-            } catch (InterruptedException e) { }
+            } catch (InterruptedException e) {
+                break;
+            }
         }
     }
 
