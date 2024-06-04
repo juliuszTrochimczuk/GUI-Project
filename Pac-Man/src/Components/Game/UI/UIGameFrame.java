@@ -39,5 +39,6 @@ public class UIGameFrame extends JFrame {
     public void updateUI(Timer timer, Player player) {
         counterPanel.updateTimeText(timer.getSeconds());
         counterPanel.updateScoreText(player.getScore());
+        counterPanel.updateHealthText(player.getHealth());
     }
 }

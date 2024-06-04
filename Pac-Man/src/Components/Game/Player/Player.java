@@ -23,6 +23,8 @@ public class Player extends GameEntity implements Runnable {
 
     private int score;
 
+    private int health = 3;
+
     public Player(GameWorld world) {
         super(ObjectsType.PLAYER, 1, 1);
         //setFocusable(true);
@@ -98,6 +100,10 @@ public class Player extends GameEntity implements Runnable {
 
     public int getScore() {
         return score;
+    }
+
+    public int getHealth() {
+        return health;
     }
 
     @Override

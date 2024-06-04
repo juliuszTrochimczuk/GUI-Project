@@ -34,4 +34,8 @@ public class UIGameCounterPanel extends JPanel {
     public void updateScoreText(int score) {
         scoreText.setText("Score: " + score);
     }
+
+    public void updateHealthText(int health) {
+        healthText.setText("Health: " + health);
+    }
 }
