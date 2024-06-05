@@ -21,8 +21,13 @@ public class MainMenuFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                SaveDataController.getInstance().saveDataInFile();
                 dispose();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                SaveDataController.getInstance().saveDataInFile();
             }
         });
 

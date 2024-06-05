@@ -30,6 +30,8 @@ public class SaveDataController {
     }
 
     public int getHighestScore() {
+        if (data.isEmpty())
+            return 0;
         return data.get(0).getScore();
     }
 
@@ -50,7 +52,6 @@ public class SaveDataController {
             FileInputStream fis = new FileInputStream("./save_file.txt");
             ObjectInputStream ois = new ObjectInputStream(fis);
             data = (ArrayList<ScoreData>)ois.readObject();
-            System.out.println(data);
             ois.close();
             fis.close();
         } catch (ClassNotFoundException | FileNotFoundException e) {
