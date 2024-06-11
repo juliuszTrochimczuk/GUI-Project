@@ -2,14 +2,16 @@ package Components.MainMenu;
 
 import Components.Game.GameThread;
 import Components.SaveDataController;
+import com.sun.tools.javac.Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class MainMenuFrame extends JFrame {
-
     private OpeningPanel openingPanel = new OpeningPanel();
     private ChooseGameSizePanel gameSizePanel = new ChooseGameSizePanel();
     private HighScorePanel highScorePanel = new HighScorePanel();
@@ -45,7 +47,7 @@ public class MainMenuFrame extends JFrame {
             revalidate();
             repaint();
         });
-        openingPanel.addActionListenerToExitButton(e -> dispose());
+        openingPanel.addActionListenerToExitButton(e -> new ExitDialog(this));
 
         highScorePanel.addActionListenerToReturnToOpeningPanelButton(e -> {
             remove(highScorePanel);
